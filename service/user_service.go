@@ -2,17 +2,20 @@ package service
 
 import (
 	"context"
-	"regexp"
+	"fmt"
 	"sync"
 
 	"github.com/Amierza/pos-broissant/dto"
 	"github.com/Amierza/pos-broissant/entity"
+	"github.com/Amierza/pos-broissant/helpers"
 	"github.com/Amierza/pos-broissant/repository"
+	"github.com/go-playground/validator/v10"
 )
 
 type (
 	UserService interface {
 		RegisterUser(ctx context.Context, req dto.UserRegisterRequest) (dto.UserRegisterResponse, error)
+		LoginUser(ctx context.Context, req dto.UserLoginRequest) (dto.UserLoginResponse, error)
 	}
 	userService struct {
 		userRepo   repository.UserRepository
@@ -40,21 +43,19 @@ func (s *userService) RegisterUser(ctx context.Context, req dto.UserRegisterRequ
 	mu.Lock()
 	defer mu.Unlock()
 
-	if !isValidEmail(req.Email) {
-		return dto.UserRegisterResponse{}, dto.ErrInvalidEmail
+	validate := validator.New()
+	err := validate.Struct(req)
+	if err != nil {
+		var errorMessages []string
+		for _, err := range err.(validator.ValidationErrors) {
+			errorMessages = append(errorMessages, err.Error())
+		}
+		return dto.UserRegisterResponse{}, fmt.Errorf("validation errors: %v", errorMessages)
 	}
 
 	_, flag, err := s.userRepo.CheckEmailOrPhoneNumber(ctx, nil, req.Email, req.PhoneNumber)
 	if err == nil || flag {
 		return dto.UserRegisterResponse{}, dto.ErrEmailOrPhoneNumberAlreadyExists
-	}
-
-	if len(req.Password) < 8 {
-		return dto.UserRegisterResponse{}, dto.ErrPasswordLessThanEight
-	}
-
-	if len(req.Pin) != 6 {
-		return dto.UserRegisterResponse{}, dto.ErrLengthPinMustBeSix
 	}
 
 	user := entity.User{
@@ -82,7 +83,41 @@ func (s *userService) RegisterUser(ctx context.Context, req dto.UserRegisterRequ
 	}, nil
 }
 
-func isValidEmail(email string) bool {
-	re := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
-	return re.MatchString(email)
+func (s *userService) LoginUser(ctx context.Context, req dto.UserLoginRequest) (dto.UserLoginResponse, error) {
+	validate := validator.New()
+	err := validate.Struct(req)
+	if err != nil {
+		var errorMessages []string
+		for _, err := range err.(validator.ValidationErrors) {
+			errorMessages = append(errorMessages, err.Error())
+		}
+		return dto.UserLoginResponse{}, fmt.Errorf("validation errors: %v", errorMessages)
+	}
+
+	user, flag, err := s.userRepo.CheckEmailOrPhoneNumber(ctx, nil, req.Email, req.Password)
+	if !flag || err != nil {
+		return dto.UserLoginResponse{}, dto.ErrEmailNotFound
+	}
+
+	checkPass, err := helpers.CheckPassword(user.Password, []byte(req.Password))
+	if !checkPass || err != nil {
+		return dto.UserLoginResponse{}, dto.ErrPasswordDoesntMatch
+	}
+
+	accessToken, refreshToken, err := s.jwtService.GenerateToken(user.ID.String())
+	if err != nil {
+		return dto.UserLoginResponse{}, dto.ErrGenerateToken
+	}
+
+	return dto.UserLoginResponse{
+		ID:           user.ID.String(),
+		FirstName:    user.FirstName,
+		LastName:     user.LastName,
+		Email:        user.Email,
+		Password:     user.Password,
+		PhoneNumber:  user.PhoneNumber,
+		Pin:          user.Pin,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}, nil
 }

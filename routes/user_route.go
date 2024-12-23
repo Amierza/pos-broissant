@@ -10,5 +10,6 @@ func User(route *gin.Engine, userController controller.UserController, jwtServic
 	routes := route.Group("api/user")
 	{
 		routes.POST("/register", userController.Register)
+		routes.POST("/login", userController.Login)
 	}
 }
