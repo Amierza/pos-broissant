@@ -13,6 +13,7 @@ type (
 	UserController interface {
 		Register(ctx *gin.Context)
 		Login(ctx *gin.Context)
+		GetAllUser(ctx *gin.Context)
 	}
 	userController struct {
 		userService service.UserService
@@ -61,4 +62,29 @@ func (c *userController) Login(ctx *gin.Context) {
 
 	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_LOGIN_USER, result)
 	ctx.JSON(http.StatusOK, res)
+}
+
+func (c *userController) GetAllUser(ctx *gin.Context) {
+	var payload dto.PaginationRequest
+	if err := ctx.ShouldBind(&payload); err != nil {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_DATA_FROM_BODY, err.Error(), nil)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+
+	result, err := c.userService.GetAllUserWithPagination(ctx.Request.Context(), payload)
+	if err != nil {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_LIST_USER, err.Error(), nil)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+
+	resp := utils.Response{
+		Status:  true,
+		Message: dto.MESSAGE_SUCCESS_GET_LIST_USER,
+		Data:    result.Data,
+		Meta:    result.PaginationResponse,
+	}
+
+	ctx.JSON(http.StatusOK, resp)
 }

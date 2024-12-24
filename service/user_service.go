@@ -16,6 +16,7 @@ type (
 	UserService interface {
 		RegisterUser(ctx context.Context, req dto.UserRegisterRequest) (dto.UserRegisterResponse, error)
 		LoginUser(ctx context.Context, req dto.UserLoginRequest) (dto.UserLoginResponse, error)
+		GetAllUserWithPagination(ctx context.Context, req dto.PaginationRequest) (dto.UserPaginationResponse, error)
 	}
 	userService struct {
 		userRepo   repository.UserRepository
@@ -119,5 +120,37 @@ func (s *userService) LoginUser(ctx context.Context, req dto.UserLoginRequest) (
 		Pin:          user.Pin,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
+	}, nil
+}
+
+func (c *userService) GetAllUserWithPagination(ctx context.Context, req dto.PaginationRequest) (dto.UserPaginationResponse, error) {
+	dataWithPagination, err := c.userRepo.GetAllUserWithPaginationRepo(ctx, nil, req)
+	if err != nil {
+		return dto.UserPaginationResponse{}, err
+	}
+
+	var datas []dto.AllUserResponse
+	for _, user := range dataWithPagination.Users {
+		data := dto.AllUserResponse{
+			ID:          user.ID.String(),
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			Email:       user.Email,
+			Password:    user.Password,
+			PhoneNumber: user.PhoneNumber,
+			Pin:         user.Pin,
+		}
+
+		datas = append(datas, data)
+	}
+
+	return dto.UserPaginationResponse{
+		Data: datas,
+		PaginationResponse: dto.PaginationResponse{
+			Page:    dataWithPagination.Page,
+			PerPage: dataWithPagination.PerPage,
+			Count:   dataWithPagination.Count,
+			MaxPage: dataWithPagination.MaxPage,
+		},
 	}, nil
 }

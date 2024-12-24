@@ -2,6 +2,8 @@ package dto
 
 import (
 	"errors"
+
+	"github.com/Amierza/pos-broissant/entity"
 )
 
 const (
@@ -9,10 +11,13 @@ const (
 	MESSAGE_FAILED_GET_DATA_FROM_BODY = "failed get data from body"
 	MESSAGE_FAILED_REGISTER_USER      = "failed register user"
 	MESSAGE_FAILED_LOGIN_USER         = "failed login user"
+	MESSAGE_FAILED_GET_LIST_USER      = "failed get list user"
 
 	// Success
-	MESSAGE_SUCCESS_REGISTER_USER = "success register user"
-	MESSAGE_SUCCESS_LOGIN_USER    = "success login user"
+	MESSAGE_SUCCESS_GET_DATA_FROM_BODY = "success get data from body"
+	MESSAGE_SUCCESS_REGISTER_USER      = "success register user"
+	MESSAGE_SUCCESS_LOGIN_USER         = "success login user"
+	MESSAGE_SUCCESS_GET_LIST_USER      = "success get list user"
 )
 
 var (
@@ -44,6 +49,7 @@ type (
 		Password    string `json:"password"`
 		PhoneNumber string `json:"phone_number"`
 		Pin         string `json:"pin"`
+		entity.Timestamp
 	}
 
 	UserLoginRequest struct {
@@ -61,5 +67,27 @@ type (
 		Pin          string `json:"pin"`
 		AccessToken  string `json:"access_token"`
 		RefreshToken string `json:"refresh_token"`
+		entity.Timestamp
+	}
+
+	GetAllUserRepositoryResponse struct {
+		Users []entity.User
+		PaginationResponse
+	}
+
+	AllUserResponse struct {
+		ID          string `json:"user_id"`
+		FirstName   string `json:"first_name"`
+		LastName    string `json:"last_name"`
+		Email       string `json:"email"`
+		Password    string `json:"password"`
+		PhoneNumber string `json:"phone_number"`
+		Pin         string `json:"pin"`
+		entity.Timestamp
+	}
+
+	UserPaginationResponse struct {
+		Data []AllUserResponse `json:"data"`
+		PaginationResponse
 	}
 )
