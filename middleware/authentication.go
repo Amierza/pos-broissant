@@ -47,8 +47,7 @@ func Authenticate(jwtService service.JWTService) gin.HandlerFunc {
 			return
 		}
 
-		newCtx := context.WithValue(ctx.Request.Context(), "Authorization", authHeader)
-		newCtx = context.WithValue(newCtx, "user_id", userID)
+		newCtx := context.WithValue(ctx.Request.Context(), "user_id", userID)
 		ctx.Request = ctx.Request.WithContext(newCtx)
 		ctx.Next()
 	}
