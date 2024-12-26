@@ -13,7 +13,7 @@ type User struct {
 	Email       string    `gorm:"unique;not null" json:"email"`
 	Password    string    `json:"password"`
 	PhoneNumber string    `gorm:"unique;not null" json:"phone_number"`
-	Pin         string    `json:"pin"`
+	Pin         string    `gorm:"default:null" json:"pin"`
 	Timestamp
 }
 

@@ -49,7 +49,6 @@ type (
 		Email       string `json:"email"`
 		Password    string `json:"password"`
 		PhoneNumber string `json:"phone_number"`
-		Pin         string `json:"pin"`
 		entity.Timestamp
 	}
 

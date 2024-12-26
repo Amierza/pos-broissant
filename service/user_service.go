@@ -79,7 +79,6 @@ func (s *userService) RegisterUser(ctx context.Context, req dto.UserRegisterRequ
 		Email:       userReg.Email,
 		Password:    userReg.Password,
 		PhoneNumber: userReg.PhoneNumber,
-		Pin:         userReg.Pin,
 	}, nil
 }
 
