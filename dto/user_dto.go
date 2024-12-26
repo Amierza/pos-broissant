@@ -40,7 +40,6 @@ type (
 		Email       string `json:"email" form:"email" validate:"required,email"`
 		Password    string `json:"password" form:"password" validate:"required,min=8"`
 		PhoneNumber string `json:"phone_number" form:"phone_number" validate:"required"`
-		Pin         string `json:"pin" form:"pin" validate:"required,len=6"`
 	}
 
 	UserRegisterResponse struct {

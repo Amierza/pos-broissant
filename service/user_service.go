@@ -65,7 +65,6 @@ func (s *userService) RegisterUser(ctx context.Context, req dto.UserRegisterRequ
 		Email:       req.Email,
 		Password:    req.Password,
 		PhoneNumber: req.PhoneNumber,
-		Pin:         req.Pin,
 	}
 
 	userReg, err := s.userRepo.RegisterUser(ctx, nil, user)
