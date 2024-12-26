@@ -12,6 +12,8 @@ const (
 	MESSAGE_FAILED_REGISTER_USER      = "failed register user"
 	MESSAGE_FAILED_LOGIN_USER         = "failed login user"
 	MESSAGE_FAILED_GET_LIST_USER      = "failed get list user"
+	MESSAGE_FAILED_PROSES_REQUEST     = "failed proses request"
+	MESSAGE_FAILED_TOKEN_NOT_FOUND    = "failed token not found"
 
 	// Success
 	MESSAGE_SUCCESS_GET_DATA_FROM_BODY = "success get data from body"

@@ -11,6 +11,8 @@ import (
 type (
 	JWTService interface {
 		GenerateToken(userID string) (string, string, error)
+		ValidateToken(tokenString string) (*jwt.Token, error)
+		GetUserIDByToken(accessToken string) (string, error)
 	}
 
 	jwtCustomClaim struct {
@@ -71,4 +73,36 @@ func (j *jwtService) GenerateToken(userID string) (string, string, error) {
 	}
 
 	return accessTokenString, refreshTokenString, nil
+}
+
+func (j *jwtService) ParseToken(t_ *jwt.Token) (any, error) {
+	if _, ok := t_.Method.(*jwt.SigningMethodHMAC); !ok {
+		return nil, fmt.Errorf("unexpected signing method: %v", t_.Header["alg"])
+	}
+
+	return []byte(j.secretKey), nil
+}
+
+func (j *jwtService) ValidateToken(tokenString string) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenString, j.ParseToken)
+	if err != nil {
+		return nil, err
+	}
+
+	return token, nil
+}
+
+func (j *jwtService) GetUserIDByToken(accessToken string) (string, error) {
+	token, err := j.ValidateToken(accessToken)
+	if err != nil {
+		return "", err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return "", fmt.Errorf("invalid token")
+	}
+
+	userID := fmt.Sprintf("%v", claims["user_id"])
+	return userID, nil
 }
