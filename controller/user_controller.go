@@ -14,6 +14,7 @@ type (
 		Register(ctx *gin.Context)
 		Login(ctx *gin.Context)
 		GetAllUser(ctx *gin.Context)
+		Logout(ctx *gin.Context)
 	}
 	userController struct {
 		userService service.UserService
@@ -87,4 +88,9 @@ func (c *userController) GetAllUser(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, resp)
+}
+
+func (c *userController) Logout(ctx *gin.Context) {
+	res := utils.BuildResponseSuccess("Logout successful", nil)
+	ctx.JSON(http.StatusOK, res)
 }
