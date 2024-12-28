@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"time"
@@ -10,18 +11,21 @@ import (
 
 type (
 	JWTService interface {
-		GenerateToken(userID string) (string, string, error)
+		GenerateToken(userID, role string) (string, string, error)
 		ValidateToken(tokenString string) (*jwt.Token, error)
 		GetUserIDByToken(accessToken string) (string, error)
+		GetRoleByToken(accessToken string) (string, error)
 	}
 
 	jwtCustomClaim struct {
 		UserID string `json:"user_id"`
+		Role   string `json:"role"`
 		jwt.RegisteredClaims
 	}
 
 	jwtService struct {
 		secretKey string
+		ctx       context.Context
 		issuer    string
 	}
 )
@@ -41,9 +45,10 @@ func NewJWTService() JWTService {
 	}
 }
 
-func (j *jwtService) GenerateToken(userID string) (string, string, error) {
+func (j *jwtService) GenerateToken(userID, role string) (string, string, error) {
 	accessClaims := jwtCustomClaim{
 		userID,
+		role,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Second * 120)),
 			Issuer:    j.issuer,
@@ -59,6 +64,7 @@ func (j *jwtService) GenerateToken(userID string) (string, string, error) {
 
 	refreshClaims := jwtCustomClaim{
 		userID,
+		role,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Second * 3600 * 24 * 7)),
 			Issuer:    j.issuer,
@@ -105,4 +111,19 @@ func (j *jwtService) GetUserIDByToken(accessToken string) (string, error) {
 
 	userID := fmt.Sprintf("%v", claims["user_id"])
 	return userID, nil
+}
+
+func (j *jwtService) GetRoleByToken(accessToken string) (string, error) {
+	token, err := j.ValidateToken(accessToken)
+	if err != nil {
+		return "", err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return "", fmt.Errorf("invalid token")
+	}
+
+	role := fmt.Sprintf("%v", claims["role"])
+	return role, nil
 }

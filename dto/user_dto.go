@@ -14,6 +14,7 @@ const (
 	MESSAGE_FAILED_GET_LIST_USER      = "failed get list user"
 	MESSAGE_FAILED_PROSES_REQUEST     = "failed proses request"
 	MESSAGE_FAILED_TOKEN_NOT_FOUND    = "failed token not found"
+	MESSAGE_FAILED_ROLE_NOT_ADMIN     = "failed role not admin"
 
 	// Success
 	MESSAGE_SUCCESS_GET_DATA_FROM_BODY = "success get data from body"
@@ -49,6 +50,7 @@ type (
 		Email       string `json:"email"`
 		Password    string `json:"password"`
 		PhoneNumber string `json:"phone_number"`
+		Role        string `json:"role"`
 		entity.Timestamp
 	}
 
@@ -65,6 +67,7 @@ type (
 		Password     string `json:"password"`
 		PhoneNumber  string `json:"phone_number"`
 		Pin          string `json:"pin"`
+		Role         string `json:"role"`
 		AccessToken  string `json:"access_token"`
 		RefreshToken string `json:"refresh_token"`
 		entity.Timestamp

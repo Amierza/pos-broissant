@@ -14,6 +14,7 @@ type User struct {
 	Password    string    `json:"password"`
 	PhoneNumber string    `gorm:"unique;not null" json:"phone_number"`
 	Pin         string    `gorm:"default:null" json:"pin"`
+	Role        string    `gorm:"default:customer" json:"role"`
 	Timestamp
 }
 

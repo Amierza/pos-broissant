@@ -5,6 +5,25 @@
     "email": "budisiregar24@gmail.com",
     "password": "budiganteng",
     "phone_number": "081233445566",
-    "pin": "123456"
+    "pin": "123456",
+    "role": "admin"
+  },
+  {
+    "first_name": "Agus",
+    "last_name": "Turah",
+    "email": "agusturah12@gmail.com",
+    "password": "agusturah22",
+    "phone_number": "098712345678",
+    "pin": "654321",
+    "role": "admin"
+  },
+  {
+    "first_name": "Sugeng",
+    "last_name": "Tamber",
+    "email": "sugengtamber44@gmail.com",
+    "password": "sugengtamber33",
+    "phone_number": "082343678865",
+    "pin": "124578",
+    "role": "admin"
   }
 ]

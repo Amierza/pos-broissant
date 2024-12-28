@@ -12,7 +12,6 @@ func User(route *gin.Engine, userController controller.UserController, jwtServic
 	{
 		routes.POST("/register", userController.Register)
 		routes.POST("/login", userController.Login)
-		routes.GET("/get-all-user", middleware.Authenticate(jwtService), userController.GetAllUser)
-		routes.POST("/logout", userController.Logout)
+		routes.GET("/get-all-user", middleware.Authenticate(jwtService), middleware.AuthorizeRoleIsAdmin(jwtService), userController.GetAllUser)
 	}
 }

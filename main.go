@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/Amierza/pos-broissant/cmd"
-	"github.com/Amierza/pos-broissant/config"
+	config "github.com/Amierza/pos-broissant/config/databases"
 	"github.com/Amierza/pos-broissant/controller"
 	"github.com/Amierza/pos-broissant/middleware"
 	"github.com/Amierza/pos-broissant/repository"
